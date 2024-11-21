@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)http://127.0.0.1:5500/%E7%82%B9%E9%A4%90.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点餐系统</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background-color: #121212; /* 暗色背景 */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            max-width: 100%;
+            z-index: 1; /* 确保内容在流星雨之上 */
+        }
+
+        h1 {
+            text-align: center;
+            color: #5cb85c;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .menu {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .menu-item button:hover {
+            background-color: #c9302c;
+        }
+
+        .random-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .random-item {
+            font-size: 24px;
+            font-weight: bold;
+            color: #5cb85c;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .random-item span {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #888;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .start-text {
+            font-size: 20px;
+            color: #555;
+            margin-right: 10px;
+            line-height: 40px;
+        }
+
+        .btn-container button {
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-container button:hover {
+            background-color: #4cae4c;
+        }
+
+        .fold-button {
+            margin-top: 10px;
+            background-color: #f0ad4e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .fold-button:hover {
+            background-color: #ec971f;
+        }
+
+        .menu-folded {
+            display: none;
+        }
+
+        /* 流星雨效果的CSS */
+        .meteor {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: meteor-shower 1.5s infinite;
+        }
+
+        @keyframes meteor-shower {
+            from {
+                top: -10%;
+                left: random(100%);
+                opacity: 1;
+            }
+            to {
+                top: 110%;
+                left: random(100%);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>点餐系统</h1>
+
+        <div class="input-group">
+            <input type="text" id="dishName" placeholder="请输入菜品名">
+            <button onclick="addDish()">添加菜品</button>
+        </div>
+
+        <div class="menu" id="menuList"><div class="menu-item" style="display: flex;"><span>红烧肉</span><button>删除</button></div><div class="menu-item" style="display: flex;"><span>大葱烧豆腐</span><button>删除</button></div><div class="menu-item" style="display: flex;"><span>排骨炖豆角</span><button>删除</button></div><div class="menu-item" style="display: flex;"><span>西红柿炒鸡蛋</span><button>删除</button></div><div class="menu-item" style="display: flex;"><span>麻辣鸡丝</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>青椒炒鸡蛋</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>炒火锅丸子</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>溜肉段</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>可乐鸡翅</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>可乐排骨</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>懒人焖饭</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>干锅菜花</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>油焖大虾</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>锅包肉</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>韭菜炒鸡蛋</span><button>删除</button></div><div class="menu-item menu-folded" style="display: flex;"><span>鱼香肉丝</span><button>删除</button></div><button class="fold-button">点击折叠</button></div>
+
+        <div class="random-box">
+            <p class="start-text">点击下方按钮开始</p>
+            <div class="random-item" id="randomDish">韭菜炒鸡蛋</div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="randomDishEffect()">随机点餐</button>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 点餐系统</p>
+        </div>
+    </div>
+
+    <script>
+        const menu = []; // 菜品数组
+
+        // 添加菜品
+        function addDish() {
+            const dishName = document.getElementById('dishName').value.trim();
+            if (dishName === '') {
+                alert('菜品名称不能为空！');
+                return;
+            }
+
+            menu.push(dishName);
+            document.getElementById('dishName').value = ''; // 清空输入框
+            updateMenu(); // 更新菜单显示
+        }
+
+        // 更新菜单显示
+        function updateMenu() {
+            const menuList = document.getElementById('menuList');
+            menuList.innerHTML = ''; // 清空菜单
+
+            menu.forEach((dish, index) => {
+                const menuItem = document.createElement('div');
+                menuItem.classList.add('menu-item');
+
+                const dishText = document.createElement('span');
+                dishText.innerText = dish;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = '删除';
+                deleteButton.onclick = () => deleteDish(index);
+
+                menuItem.appendChild(dishText);
+                menuItem.appendChild(deleteButton);
+
+                menuList.appendChild(menuItem);
+            });
+
+            // 如果菜品数超过5个，则添加折叠按钮
+            if (menu.length > 5) {
+                const foldButton = document.createElement('button');
+                foldButton.classList.add('fold-button');
+                foldButton.innerText = '点击查看更多';
+                foldButton.onclick = toggleMenu;
+                menuList.appendChild(foldButton);
+
+                // 将超过 5 个的菜品折叠起来
+                const items = menuList.getElementsByClassName('menu-item');
+                for (let i = 5; i < items.length; i++) {
+                    items[i].classList.add('menu-folded');
+                }
+            }
+        }
+
+        // 删除菜品
+        function deleteDish(index) {
+            menu.splice(index, 1);
+            updateMenu(); // 更新菜单显示
+        }
+
+        // 随机点餐效果
+        function randomDishEffect() {
+            if (menu.length === 0) {
+                alert('菜品为空，无法随机点餐！');
+                return;
+            }
+
+            // 重置显示内容和动画效果
+            const randomDishElement = document.getElementById('randomDish');
+            randomDishElement.innerText = '';  // 清空之前的内容
+
+            let counter = 0;
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * menu.length);
+                randomDishElement.innerText = menu[randomIndex];
+                counter++;
+
+                // 经过一定次数后停止滚动，显示最终选择的菜品
+                if (counter > 20) { // 调整次数控制滚动的速度
+                    clearInterval(interval);
+                    const finalDish = menu[Math.floor(Math.random() * menu.length)];
+                    randomDishElement.innerText = finalDish; // 显示随机选择的菜
+                }
+            }, 100); // 每隔100ms更新一次
+        }
+
+        // 菜单折叠功能
+        function toggleMenu() {
+            const foldButton = document.querySelector('.fold-button');
+            const foldedItems = document.querySelectorAll('.menu-folded');
+            const items = document.querySelectorAll('.menu-item');
+
+            if (foldButton.innerText === '点击查看更多') {
+                items.forEach(item => item.style.display = 'flex');
+                foldButton.innerText = '点击折叠';
+            } else {
+                foldedItems.forEach(item => item.style.display = 'none');
+                foldButton.innerText = '点击查看更多';
+            }
+        }
+
+        // 流星雨效果
+        function createMeteor() {
+            const meteor = document.createElement('div');
+            meteor.classList.add('meteor');
+            document.body.appendChild(meteor);
+
+            const startLeft = Math.random() * window.innerWidth;
+            const delay = Math.random() * 2 + 0.5; // 流星频率
+
+            meteor.style.left = `${startLeft}px`;
+            meteor.style.animationDuration = `${delay}s`;
+
+            setTimeout(() => {
+                meteor.remove();
+            }, delay * 1000);
+        }
+
+        setInterval(createMeteor, 50); // 每 50 毫秒生成一个流星
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+<div class="meteor" style="left: 1252.74px; animation-duration: 1.99315s;"></div><div class="meteor" style="left: 1178.82px; animation-duration: 2.1885s;"></div><div class="meteor" style="left: 350.889px; animation-duration: 1.81307s;"></div><div class="meteor" style="left: 462.84px; animation-duration: 1.98322s;"></div><div class="meteor" style="left: 337.804px; animation-duration: 2.49786s;"></div><div class="meteor" style="left: 610.551px; animation-duration: 1.88248s;"></div><div class="meteor" style="left: 411.378px; animation-duration: 1.31854s;"></div><div class="meteor" style="left: 1663.04px; animation-duration: 2.03578s;"></div><div class="meteor" style="left: 77.4849px; animation-duration: 2.30162s;"></div><div class="meteor" style="left: 303.865px; animation-duration: 1.88519s;"></div><div class="meteor" style="left: 63.0394px; animation-duration: 1.43448s;"></div><div class="meteor" style="left: 842.336px; animation-duration: 2.23777s;"></div><div class="meteor" style="left: 1814.51px; animation-duration: 0.983626s;"></div><div class="meteor" style="left: 47.3728px; animation-duration: 2.09127s;"></div><div class="meteor" style="left: 152.449px; animation-duration: 2.30104s;"></div><div class="meteor" style="left: 254.163px; animation-duration: 1.29403s;"></div><div class="meteor" style="left: 167.104px; animation-duration: 1.85881s;"></div><div class="meteor" style="left: 377.034px; animation-duration: 1.20765s;"></div><div class="meteor" style="left: 893.337px; animation-duration: 1.35194s;"></div><div class="meteor" style="left: 757.799px; animation-duration: 0.515989s;"></div><div class="meteor" style="left: 1527.79px; animation-duration: 2.16883s;"></div><div class="meteor" style="left: 1027.74px; animation-duration: 1.42626s;"></div><div class="meteor" style="left: 713.361px; animation-duration: 0.818187s;"></div><div class="meteor" style="left: 1794.08px; animation-duration: 1.14306s;"></div><div class="meteor" style="left: 96.8767px; animation-duration: 0.79384s;"></div><div class="meteor" style="left: 262.055px; animation-duration: 0.647841s;"></div><div class="meteor" style="left: 1539.89px; animation-duration: 1.12326s;"></div><div class="meteor" style="left: 339.855px; animation-duration: 1.43144s;"></div><div class="meteor" style="left: 782.582px; animation-duration: 1.41602s;"></div></body></html>
