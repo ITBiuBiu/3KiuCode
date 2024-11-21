@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点餐系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0c0c0c;
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        #menu {
+            margin-bottom: 20px;
+        }
+
+        #dishList {
+            list-style-type: none;
+            padding: 0;
+            color: #333;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #dishList li {
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            margin: 8px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            flex-basis: calc(33.333% - 20px);
+            text-align: center;
+        }
+
+        #dishList li:hover {
+            transform: scale(1.05);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #randomDish {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #FF5722;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            width: 250px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #addDishButton {
+            margin-left: 10px;
+        }
+
+        /* 流星雨效果 */
+        .meteor {
+            position: absolute;
+            top: -50px;
+            width: 3px;
+            height: 10px;
+            background-color: #fff;
+            animation: fall 1s linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(45deg);
+            }
+        }
+
+        /* 折叠按钮 */
+        #collapseButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #FF5722;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* 菜单项超过6个时才显示折叠按钮 */
+        #collapseButton.show {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>点餐系统</h1>
+
+    <div>
+        <input id="newDish" type="text" placeholder="输入菜品名称">
+        <button id="addDishButton">添加菜品</button>
+    </div>
+
+    <div id="menu">
+        <h2>已添加的菜品：</h2>
+        <ul id="dishList">
+            <!-- 菜品列表 -->
+        </ul>
+        <button id="collapseButton">展开/折叠菜品</button>
+    </div>
+
+    <button id="randomButton">随机点餐</button>
+    <div id="randomDish"></div>
+
+    <!-- 导入/导出数据按钮 -->
+    <div>
+        <button id="downloadButton">下载菜品数据</button>
+        <input type="file" id="uploadButton" />
+    </div>
+</div>
+
+<!-- 动态流星雨 -->
+<script>
+    // 创建流星雨效果
+    function createMeteor() {
+        const meteor = document.createElement('div');
+        meteor.className = 'meteor';
+        meteor.style.left = `${Math.random() * 100}vw`; // 随机生成流星横坐标
+        document.body.appendChild(meteor);
+        setTimeout(() => {
+            meteor.remove(); // 移除流星
+        }, 1000); // 动画完成后移除流星
+    }
+
+    // 每50毫秒生成一个流星
+    setInterval(createMeteor, 50);
+</script>
+
+<script>
+    // 初始化菜品数据
+    let dishes = [];
+
+    // 从 localStorage 读取数据
+    function loadDishes() {
+        const storedDishes = localStorage.getItem('dishes');
+        if (storedDishes) {
+            dishes = JSON.parse(storedDishes); // 将字符串解析为数组
+            displayDishes(); // 显示菜品列表
+        } else {
+            dishes = []; // 如果没有存储的菜品数据，初始化为空数组
+        }
+    }
+
+    // 保存菜品到 localStorage
+    function saveDishes() {
+        localStorage.setItem('dishes', JSON.stringify(dishes));
+    }
+
+    // 显示菜品列表
+    function displayDishes() {
+        const dishList = document.getElementById('dishList');
+        dishList.innerHTML = ''; // 清空列表
+        dishes.forEach(dish => {
+            const li = document.createElement('li');
+            li.textContent = dish;
+            dishList.appendChild(li);
+        });
+        toggleCollapseButton(); // 检查是否超过6个菜品
+    }
+
+    // 添加新菜品
+    document.getElementById('addDishButton').addEventListener('click', function() {
+        const newDish = document.getElementById('newDish').value.trim();
+        if (newDish && !dishes.includes(newDish)) {
+            dishes.push(newDish);
+            displayDishes(); // 更新页面
+            saveDishes(); // 保存到 localStorage
+        }
+        document.getElementById('newDish').value = ''; // 清空输入框
+    });
+
+    // 随机点餐功能
+    document.getElementById('randomButton').addEventListener('click', function() {
+        if (dishes.length === 0) {
+            document.getElementById('randomDish').textContent = '菜单为空，请添加菜品！';
+            return;
+        }
+
+        let counter = 0;
+        const randomDishText = document.getElementById('randomDish');
+        randomDishText.textContent = '正在随机点餐...';
+
+        // 让菜品随机选择的效果像“刷”一样
+        const interval = setInterval(function() {
+            const randomDish = dishes[Math.floor(Math.random() * dishes.length)];
+            randomDishText.textContent = `今晚你要吃的是：${randomDish}`;
+            counter++;
+            if (counter === 10) { // 刷新10次后停止
+                clearInterval(interval);
+                randomDishText.textContent = `今晚你要吃的是：${dishes[Math.floor(Math.random() * dishes.length)]}`;
+            }
+        }, 100);
+    });
+
+    // 切换折叠按钮显示
+    function toggleCollapseButton() {
+        const collapseButton = document.getElementById('collapseButton');
+        if (dishes.length > 6) {
+            collapseButton.classList.add('show');
+        } else {
+            collapseButton.classList.remove('show');
+        }
+    }
+
+    // 展开/折叠菜单
+    document.getElementById('collapseButton').addEventListener('click', function() {
+        const dishList = document.getElementById('dishList');
+        const items = dishList.getElementsByTagName('li');
+        for (let i = 6; i < items.length; i++) {
+            items[i].style.display = items[i].style.display === 'none' ? 'block' : 'none';
+        }
+    });
+
+    // 下载菜品数据为JSON文件
+    document.getElementById('downloadButton').addEventListener('click', function() {
+        const blob = new Blob([JSON.stringify(dishes)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'dishes.json';
+        link.click();
+    });
+
+    // 上传菜品数据
+    document.getElementById('uploadButton').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const uploadedData = JSON.parse(e.target.result);
+            dishes = uploadedData;
+            displayDishes();
+            saveDishes();
+        };
+        reader.readAsText(file);
+    });
+
+    // 页面加载时加载菜品数据
+    window.onload = function() {
+        loadDishes();
+    };
+</script>
+
+</body>
+</html>
